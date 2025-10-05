@@ -1,7 +1,7 @@
 # Personal-Budget-Tracker
 
 ## Team Members & Roles 
-**1. Alex Dayberry** — Project Lead / Developer  
+**1. Alex Dayberry** — Project Lead / Developer / Documentation Manager
 **2. Suha Farshori** — Project Lead / Front-End Developer / Documentation Manager
 
 ## Problem Description
