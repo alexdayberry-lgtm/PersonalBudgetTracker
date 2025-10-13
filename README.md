@@ -3,7 +3,7 @@
 ## Team Members & Roles 
 **1. Alex Dayberry** — Project Lead / Developer / Documentation Manager
 
-**2. Suha Farshori** — Project Lead / Front-End Developer / Doc Manager
+**2. Suha Farshori** — Project Lead / Front-End Developer / Documentation Manager
     
 **3. Nick Zaharescu** — Project Lead / Developer / Code Tester
 
