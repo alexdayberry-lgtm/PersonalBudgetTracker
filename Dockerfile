@@ -1,14 +1,19 @@
-# Use openjdk base image
-FROM openjdk:24
+# Build stage
+FROM openjdk:24 AS build
 
-# Set the working directory to /app
 WORKDIR /app
+COPY src/ /app/src/
 
-# Copy all files from the src directory into the container's /app directory
-COPY src/ /app/
+# compile all java sources into /app/out
+RUN javac -d out $(find src -name "*.java")
 
-# Compile all Java files inside the /app directory
-RUN javac *.java
+# Runtime stage
+FROM openjdk:23-jdk
+WORKDIR /app
+COPY --from=build /app/out /app/
 
-# Set the default command to run the Java program (assuming you want to run HelloWorld)
-CMD ["java", "HelloWorld"]
+# make data directory and allow mapping from host
+VOLUME ["/app/data"]
+
+# run main
+CMD ["java", "app.Main"]
