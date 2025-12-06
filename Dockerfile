@@ -1,11 +1,23 @@
-FROM openjdk:23
+# Use stable OpenJDK
+FROM openjdk:24-ea
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy compiled class files from IntelliJ’s out/ directory
-COPY out/production/YourProjectName/ /app
+# Copy all source code
+COPY src/ /app/src
 
-# Run the program
-CMD ["java", "app.Main"]
+# Create output classes directory
+RUN mkdir -p /app/classes
 
+# 1️ Compile security package first
+RUN javac -d /app/classes /app/src/security/*.java
+
+# 2️ Compile budget package, referencing compiled classes
+RUN javac -d /app/classes -cp /app/classes /app/src/budget/*.java
+
+# Set runtime working directory
+WORKDIR /app/classes
+
+# Run the main class
+CMD ["java", "budget.Main"]
