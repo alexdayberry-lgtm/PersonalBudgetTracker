@@ -1,19 +1,11 @@
-# Build stage
-FROM openjdk:24 AS build
+FROM openjdk:23
 
+# Create app directory
 WORKDIR /app
-COPY src/ /app/src/
 
-# compile all java sources into /app/out
-RUN javac -d out $(find src -name "*.java")
+# Copy compiled class files from IntelliJ’s out/ directory
+COPY out/production/YourProjectName/ /app
 
-# Runtime stage
-FROM openjdk:23-jdk
-WORKDIR /app
-COPY --from=build /app/out /app/
-
-# make data directory and allow mapping from host
-VOLUME ["/app/data"]
-
-# run main
+# Run the program
 CMD ["java", "app.Main"]
+
