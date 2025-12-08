@@ -2,21 +2,36 @@ package budget;
 
 import java.util.Scanner;
 
+/**
+ * Manages the main flow of the budgeting application, including menu
+ * navigation, user input handling, and interactions with {@link UserBudget}.
+ * <p>
+ * This class is responsible for reading user choices, directing users to
+ * budget setup, transaction entry, and summary viewing.
+ */
 public class BudgetManager {
 
     private final Scanner scanner;
     private final UserBudget userBudget;
 
+    /**
+     * Constructs a {@code BudgetManager} using a shared {@link Scanner} instance.
+     *
+     * @param scanner the scanner used for reading user input
+     */
     public BudgetManager(Scanner scanner) {
         this.scanner = scanner;
         this.userBudget = new UserBudget();
     }
 
+    /**
+     * Runs the main application loop and processes menu selections until
+     * the user chooses to exit.
+     */
     public void run() {
         while (true) {
             printMainMenu();
             String choice = scanner.nextLine().trim();
-
             switch (choice) {
                 case "1" -> setMonthlyBudget();
                 case "2" -> transactionMenu();
@@ -30,6 +45,9 @@ public class BudgetManager {
         }
     }
 
+    /**
+     * Prints the main menu options for the user.
+     */
     private void printMainMenu() {
         System.out.println("===== Budget Menu =====");
         System.out.println("1. Set Monthly Budget");
@@ -39,6 +57,10 @@ public class BudgetManager {
         System.out.print("Choose an option: ");
     }
 
+    /**
+     * Prompts the user to enter a monthly budget amount and updates the
+     * {@link UserBudget} instance with the new value.
+     */
     private void setMonthlyBudget() {
         System.out.print("Enter desired monthly budget amount: ");
         String raw = scanner.nextLine().replace("$", "").trim();
@@ -52,6 +74,11 @@ public class BudgetManager {
         }
     }
 
+    /**
+     * Displays the transaction menu, validates the user’s selection,
+     * and collects transaction data such as amount and description.
+     * Adds the transaction as either income or expense.
+     */
     private void transactionMenu() {
         System.out.println("\n--- Transactions ---");
         System.out.println("1. Income");
@@ -66,6 +93,7 @@ public class BudgetManager {
 
         System.out.print("Enter amount: ");
         String amtRaw = scanner.nextLine().replace("$", "").trim();
+
         double amount;
         try {
             amount = Double.parseDouble(amtRaw);
@@ -88,6 +116,10 @@ public class BudgetManager {
         }
     }
 
+    /**
+     * Displays a full financial summary including monthly budget,
+     * total income, total expenses, and remaining balance.
+     */
     private void viewSummary() {
         System.out.println("\n--- Monthly Balance & Summary ---");
         System.out.println(userBudget.getSummary());
