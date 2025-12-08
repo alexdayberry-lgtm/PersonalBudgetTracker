@@ -4,23 +4,16 @@ import security.PasswordValidator;
 import java.util.Scanner;
 
 /**
- * The main entry point for the budget tracker application.
- * <p>
- * This class initializes the password validation process and launches the
- * {@link BudgetManager} once the user provides a valid password.
+ * Main application entry. Demonstrates constants, Scanner usage, JavaDocs.
  */
 public class Main {
 
-    /**
-     * Launches the application. Prompts the user to enter a valid password,
-     * then initializes and runs the {@link BudgetManager}.
-     *
-     * @param args command-line arguments (unused)
-     */
+    private static final String APP_NAME = "Personal Budget Tracker";
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Welcome to your personal budget tracker.");
+        System.out.println("Welcome to " + APP_NAME + ".");
         System.out.print("Create or enter your password: ");
         System.out.flush();
 
@@ -29,6 +22,7 @@ public class Main {
         while (true) {
             if (!scanner.hasNextLine()) {
                 System.out.println("\nNo input detected. Exiting.");
+                scanner.close();
                 return;
             }
             password = scanner.nextLine().trim();
@@ -46,5 +40,7 @@ public class Main {
 
         BudgetManager manager = new BudgetManager(scanner);
         manager.run();
+
+        scanner.close();
     }
 }

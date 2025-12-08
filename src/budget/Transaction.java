@@ -1,56 +1,49 @@
 package budget;
 
-/**
- * Represents a single financial transaction, either an income or expense,
- * including its type, amount, and description.
- */
-public class Transaction {
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
-    private final String type;        // "Income" or "Expense"
-    private final double amount;      // positive number
-    private final String description;
+/**
+ * General transaction implementation that extends FinancialRecord.
+ * Demonstrates inheritance, use of super, static variables/methods, and Random.
+ */
+public class Transaction extends FinancialRecord {
+
+    // static counter shared across all transactions
+    private static final AtomicInteger COUNTER = new AtomicInteger(0);
+
+    // unique ID for this transaction (demonstrates Random + constructor logic)
+    private final String id;
+    private final String type; // "Income" or "Expense"
 
     /**
-     * Constructs a transaction with the specified details.
-     *
-     * @param type        the transaction type ("Income" or "Expense")
-     * @param amount      the monetary value of the transaction
-     * @param description a brief explanation or label for the transaction
+     * Constructs a Transaction. Uses super() to initialize FinancialRecord fields.
      */
     public Transaction(String type, double amount, String description) {
+        super(amount, description);
         this.type = type;
-        this.amount = amount;
-        this.description = description;
+        // generate a simple pseudo-random id combined with an incrementing counter
+        this.id = "TX-" + COUNTER.incrementAndGet() + "-" + new Random().nextInt(9000 + 1000);
     }
 
-    /**
-     * @return the type of transaction
-     */
+    @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * @return the transaction amount
-     */
-    public double getAmount() {
-        return amount;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @return the description of the transaction
+     * Static method exposing how many Transaction objects have been created.
      */
-    public String getDescription() {
-        return description;
+    public static int getTotalTransactions() {
+        return COUNTER.get();
     }
 
-    /**
-     * Returns a formatted string representation of the transaction.
-     *
-     * @return transaction details as a readable string
-     */
     @Override
     public String toString() {
-        return type + ": $" + String.format("%.2f", amount) + " - " + description;
+        return "[" + id + "] " + super.toString();
     }
 }

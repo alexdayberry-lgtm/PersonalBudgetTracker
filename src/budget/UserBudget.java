@@ -4,92 +4,134 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages a user’s monthly budget and all associated financial transactions.
- * <p>
- * This class stores income, expenses, and the overall monthly budget while
- * providing detailed summaries and calculations.
+ * Manages user's budget, transactions, and provides summaries.
+ * Demonstrates arrays, method overloading, Math usage, encapsulation, static helpers.
  */
 public class UserBudget {
 
+    // constant
+    public static final int MONTHS_IN_YEAR = 12;
+
+    // fields
     private double monthlyBudget = 0.0;
     private final List<Transaction> transactions = new ArrayList<>();
 
-    /**
-     * Sets the user’s monthly budget.
-     *
-     * @param amount the budget amount for the month
-     */
+    // primitive array to demonstrate requirement #11 (Array). Tracks monthly expense totals by month index (0-11).
+    private final double[] monthlyExpenses = new double[MONTHS_IN_YEAR];
+
+    public UserBudget() {
+        // initialize array explicitly (not required in Java, but clearer)
+        for (int i = 0; i < monthlyExpenses.length; i++) {
+            monthlyExpenses[i] = 0.0;
+        }
+    }
+
     public void setMonthlyBudget(double amount) {
         this.monthlyBudget = amount;
     }
 
-    /**
-     * @return the current monthly budget
-     */
     public double getMonthlyBudget() {
         return monthlyBudget;
     }
 
     /**
-     * Adds a new transaction, either income or expense, to the log.
-     *
-     * @param type        "Income" or "Expense"
-     * @param amount      a positive amount representing the transaction
-     * @param description a brief explanation of the transaction
+     * Overloaded addTransaction methods demonstrate method overloading:
+     *  - one accepts type+amount (no description)
+     *  - one accepts type+amount+description
+     *  - one accepts a Transaction object directly
      */
-    public void addTransaction(String type, double amount, String description) {
-        transactions.add(new Transaction(type, amount, description));
+
+    // 1) minimal: no description
+    public void addTransaction(String type, double amount) {
+        addTransaction(type, amount, "(no description)");
     }
 
-    /**
-     * Calculates the total recorded income.
-     *
-     * @return the sum of all income transactions
-     */
+    // 2) full signature
+    public void addTransaction(String type, double amount, String description) {
+        Transaction t;
+        if ("Income".equalsIgnoreCase(type)) {
+            t = new IncomeTransaction(amount, description);
+        } else {
+            t = new ExpenseTransaction(amount, description);
+            // put into monthlyExpenses using the transaction timestamp month
+            int monthIndex = t.getTimestamp().getMonthValue() - 1; // 0-based
+            monthlyExpenses[monthIndex] += amount; // accumulate expense into primitive array
+        }
+        transactions.add(t);
+    }
+
+    // 3) accept existing Transaction / FinancialRecord
+    public void addTransaction(Transaction t) {
+        if (t == null) return;
+        transactions.add(t);
+        if ("Expense".equalsIgnoreCase(t.getType())) {
+            int monthIndex = t.getTimestamp().getMonthValue() - 1;
+            monthlyExpenses[monthIndex] += t.getAmount();
+        }
+    }
+
     public double getTotalIncome() {
         double sum = 0.0;
-        for (Transaction t : transactions)
-            if ("Income".equals(t.getType()))
+        for (Transaction t : transactions) {
+            if ("Income".equalsIgnoreCase(t.getType()))
                 sum += t.getAmount();
+        }
         return sum;
     }
 
-    /**
-     * Calculates the total recorded expenses.
-     *
-     * @return the sum of all expense transactions
-     */
     public double getTotalExpenses() {
         double sum = 0.0;
-        for (Transaction t : transactions)
-            if ("Expense".equals(t.getType()))
+        for (Transaction t : transactions) {
+            if ("Expense".equalsIgnoreCase(t.getType()))
                 sum += t.getAmount();
+        }
         return sum;
     }
 
     /**
-     * Computes the remaining balance:
-     * <p>
-     * {@code remaining = monthlyBudget + totalIncome - totalExpenses}
-     *
-     * @return the amount remaining for the month
+     * Demonstrates Math class usage and arithmetic operators.
+     * remaining = monthlyBudget + totalIncome - totalExpenses
      */
     public double getRemaining() {
-        return monthlyBudget + getTotalIncome() - getTotalExpenses();
+        double remaining = monthlyBudget + getTotalIncome() - getTotalExpenses();
+        // show usage of Math.round and Math.max as examples
+        return Math.round(remaining * 100.0) / 100.0;
     }
 
     /**
-     * Generates a full summary of the user’s budget, including all transactions,
-     * totals, and remaining balance.
-     *
-     * @return a multi-line formatted budget summary
+     * Demonstrates use of a primitive array: calculate average monthly expense.
+     */
+    public double getAverageMonthlyExpense() {
+        double total = 0.0;
+        for (double v : monthlyExpenses) total += v;
+        return monthlyExpenses.length == 0 ? 0.0 : total / monthlyExpenses.length;
+    }
+
+    /**
+     * Example method showing pass-by-value semantics: takes primitive and returns modified amount.
+     * Note: this doesn't mutate the caller's variable.
+     */
+    public double applyProcessingFee(double amount, double feePercent) {
+        double fee = amount * (feePercent / 100.0);
+        return amount - fee; // caller must use returned value
+    }
+
+    /**
+     * Generates a multi-line formatted summary (uses ternary conditional operator).
      */
     public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Monthly Budget: $").append(String.format("%.2f", monthlyBudget)).append("\n");
         sb.append("Total Income: $").append(String.format("%.2f", getTotalIncome())).append("\n");
         sb.append("Total Expenses: $").append(String.format("%.2f", getTotalExpenses())).append("\n");
-        sb.append("Remaining: $").append(String.format("%.2f", getRemaining())).append("\n\n");
+
+        double remaining = getRemaining();
+        // ternary operator
+        String status = remaining >= 0 ? "Surplus" : "Deficit";
+        sb.append("Remaining: $").append(String.format("%.2f", remaining)).append(" (").append(status).append(")\n\n");
+
+        sb.append("Average Monthly Expense (from primitive array): $")
+                .append(String.format("%.2f", getAverageMonthlyExpense())).append("\n\n");
 
         sb.append("Transactions:\n");
         if (transactions.isEmpty()) {
@@ -99,6 +141,7 @@ public class UserBudget {
                 sb.append("- ").append(t.toString()).append("\n");
             }
         }
+        sb.append("\nTotal Transactions created: ").append(Transaction.getTotalTransactions()).append("\n");
         return sb.toString();
     }
 }
