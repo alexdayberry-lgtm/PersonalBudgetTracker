@@ -6,13 +6,14 @@ import java.util.Scanner;
 /**
  * Main application entry. Demonstrates constants, Scanner usage, JavaDocs.
  */
+
 public class Main {
 
     private static final String APP_NAME = "Personal Budget Tracker";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-System.out.print("demo");
+
         System.out.println("Welcome to " + APP_NAME + ".");
         System.out.print("Create or enter your password: ");
         System.out.flush();
@@ -42,5 +43,9 @@ System.out.print("demo");
         manager.run();
 
         scanner.close();
+        System.out.print("demo"); {
+
+        }
+
     }
 }
