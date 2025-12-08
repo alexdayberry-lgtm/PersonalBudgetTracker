@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
+System.out.print("demo");
         System.out.println("Welcome to " + APP_NAME + ".");
         System.out.print("Create or enter your password: ");
         System.out.flush();
