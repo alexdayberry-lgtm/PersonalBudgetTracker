@@ -4,30 +4,35 @@ import security.PasswordValidator;
 import java.util.Scanner;
 
 /**
- * Main entry point for the Personal Budget Tracker application.
+ * Application entry point.
  */
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Welcome message FIRST
         System.out.println("Welcome to your personal budget tracker.");
-
-        // Password setup/login
         System.out.print("Create or enter your password: ");
-        String password = scanner.nextLine();
+        System.out.flush();
 
-        while (!PasswordValidator.isValid(password)) {
-            System.out.println("Password does not meet the required conditions.");
-            System.out.print("Enter a valid password: ");
-            password = scanner.nextLine();
+        String password = "";
+        // read password safely
+        while (true) {
+            if (!scanner.hasNextLine()) { // protect against EOF
+                System.out.println("\nNo input detected. Exiting.");
+                return;
+            }
+            password = scanner.nextLine().trim();
+            if (PasswordValidator.isValid(password)) break;
+            System.out.println("Enter a valid password. (At least 8 chars, upper & lower case, digit, special char)");
+            System.out.print("Create or enter your password: ");
+            System.out.flush();
         }
 
-        System.out.println("Password accepted. Access granted!");
+        System.out.println("Password accepted. Access granted!\n");
 
-        // Start budget manager
-        BudgetManager manager = new BudgetManager();
+        // Pass the single Scanner instance to the manager so we don't create multiple scanners
+        BudgetManager manager = new BudgetManager(scanner);
         manager.run();
     }
 }
